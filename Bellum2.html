@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Contador Web para Juego</title>
+  <style>
+    /* Estilos para el recuadro de recursos y construcciones */
+    .recuadro {
+      border: 2px solid #000;
+      padding: 10px;
+      margin: 10px;
+    }
+
+    .recuadro-recursos {
+      background-color: #b4d4e8;
+    }
+
+    .recuadro-construcciones {
+      background-color: #f7e08a;
+    }
+
+    .recuadro-investigaciones {
+      background-color: #a6c2e2;
+    }
+
+    .recuadro-origen {
+      background-color: #e8b4b4;
+    }
+
+    /* Estilos para el bloque de turno */
+    .bloque-turno {
+      text-align: right;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="recuadro recuadro-origen">
+    <h2>Origen</h2>
+    <label for="origenSelect">Elige tu origen:</label>
+    <select id="origenSelect" onchange="actualizarRecursos()">
+      <option value="normal">Normal</option>
+      <option value="industrial">Industrial</option>
+      <option value="naval">Naval</option>
+      <option value="agricola">Agrícola</option>
+      <option value="minero">Minero</option>
+      <option value="dictatorial">Dictatorial</option>
+      <option value="guerraCivil">Guerra Civil</option>
+      <option value="pequenaAbundancia">Pequeña Abundancia</option>
+    </select>
+  </div>
+
+  <div class="recuadro recuadro-recursos">
+    <h2>Recursos</h2>
+    <p>Energía: 
+      <button onclick="restarRecurso('energia')">-</button>
+      <span id="energia">0</span>
+      <button onclick="sumarRecurso('energia')">+</button>
+    </p>
+    <p>Materia Prima: 
+      <button onclick="restarRecurso('materiaPrima')">-</button>
+      <span id="materiaPrima">0</span>
+      <button onclick="sumarRecurso('materiaPrima')">+</button>
+    </p>
+    <p>Aleaciones: 
+      <button onclick="restarRecurso('aleaciones')">-</button>
+      <span id="aleaciones">0</span>
+      <button onclick="sumarRecurso('aleaciones')">+</button>
+    </p>
+    <p>Comida: 
+      <button onclick="restarRecurso('comida')">-</button>
+      <span id="comida">0</span>
+      <button onclick="sumarRecurso('comida')">+</button>
+    </p>
+    <p>Producción: <span id="produccion">0</span></p>
+  </div>
+
+  <div class="recuadro recuadro-construcciones">
+    <h2>Construcciones</h2>
+    <p>
+      <button onclick="mostrarConstrucciones()">Construir</button>
+      <span id="construccionSeleccionada"></span>
+    </p>
+    <ul id="listaConstrucciones"></ul>
+  </div>
+
+  <div class="recuadro recuadro-investigaciones">
+    <h2>Investigaciones</h2>
+    <p>Ataque Unidad 1: <span id="ataqueUnidad1">0</span></p>
+    <p>Defensa Unidad 1: <span id="defensaUnidad1">0</span></p>
+    <!-- Agrega los campos para las demás unidades y mejoras -->
+  </div>
+
+  <!-- Bloque de turno -->
+  <div class="bloque-turno">
+    <p>Turno: <span id="turno">1</span></p>
+    <button onclick="siguienteTurno()">Siguiente Turno</button>
+  </div>
+
+  <script>
+    // Función para actualizar los recursos según el origen seleccionado
+    function actualizarRecursos() {
+      const origenSelect = document.getElementById('origenSelect');
+      const seleccionado = origenSelect.value;
+
+      const recursos = {
+        normal: {
+          produccion: 50,
+          energia: 10,
+          materiaPrima: 10,
+          comida: 10,
+          aleaciones: 5
+        },
+        industrial: {
+          produccion: 100,
+          energia: 20,
+          materiaPrima: 2,
+          comida: 2,
+          aleaciones: 10
+        },
+        naval: {
+          produccion: 60,
+          energia: 10,
+          materiaPrima: 5,
+          comida: 15,
+          aleaciones: 1
+        },
+        agricola: {
+          produccion: 50,
+          energia: 5,
+          materiaPrima: 5,
+          comida: 30,
+          aleaciones: 0
+        },
+        minero: {
+          produccion: 50,
+          energia: 7,
+          materiaPrima: 20,
+          comida: 3,
+          aleaciones: 2
+        },
+        dictatorial: {
+          produccion: 70,
+          energia: 5,
+          materiaPrima: 5,
+          comida: 3,
+          aleaciones: 3
+        },
+        guerraCivil: {
+          produccion: 30,
+          energia: 3,
+          materiaPrima: 10,
+          comida: 7,
+          aleaciones: 3
+        },
+        pequenaAbundancia: {
+          produccion: 100,
+          energia: 15,
+          materiaPrima: 15,
+          comida: 15,
+          aleaciones: 10
+        },
+      };
+
+      const seleccionadoData = recursos[seleccionado];
+      document.getElementById('energia').textContent = seleccionadoData.energia;
+      document.getElementById('materiaPrima').textContent = seleccionadoData.materiaPrima;
+      document.getElementById('aleaciones').textContent = seleccionadoData.aleaciones;
+      document.getElementById('comida').textContent = seleccionadoData.comida;
+      document.getElementById('produccion').textContent = seleccionadoData.produccion;
+
+      // Aquí puedes agregar más código para actualizar los valores de las construcciones e investigaciones según el origen seleccionado
+    }
+
+    // Función para sumar 1 unidad a un recurso
+    function sumarRecurso(recurso) {
+      const recursoSpan = document.getElementById(recurso);
+      let valorRecurso = parseInt(recursoSpan.textContent);
+      recursoSpan.textContent = valorRecurso + 1;
+    }
+
+    // Función para restar 1 unidad a un recurso (no permitir valores negativos)
+    function restarRecurso(recurso) {
+      const recursoSpan = document.getElementById(recurso);
+      let valorRecurso = parseInt(recursoSpan.textContent);
+      if (valorRecurso > 0) {
+        recursoSpan.textContent = valorRecurso - 1;
+      }
+    }
+
+    // Función para mostrar la lista de construcciones disponibles
+    function mostrarConstrucciones() {
+      const construccionSeleccionada = document.getElementById('construccionSeleccionada');
+      construccionSeleccionada.innerHTML = `
+        <label for="construccionSelect">Selecciona una construcción:</label>
+        <select id="construccionSelect" onchange="calcularTurnosConstruccion()">
+          <option value="granjas">Granjas (Coste Producción: 50)</option>
+          <option value="minas">Minas (Coste Producción: 100)</option>
+          <option value="fabricasAleaciones">Fábricas de Aleaciones (Coste Producción: 200)</option>
+          <option value="refinerias">Refinerías (Coste Producción: 150)</option>
+          <option value="reactores">Reactores (Coste Producción: 250)</option>
+          <option value="minasEsclavos">Minas de Esclavos (Coste Producción: 300)</option>
+          <option value="centrosTrabajosForzados">Centros de Trabajos Forzados (Coste Producción: 400)</option>
+        </select>
+        <span id="turnosConstruccion"></span>
+        <button onclick="construirSeleccionada()">Construir</button>
+      `;
+    }
+
+    // Función para calcular la cantidad de turnos que tomará una construcción
+    function calcularTurnosConstruccion() {
+      const construccionSelect = document.getElementById('construccionSelect');
+      const costoProduccion = obtenerCostoProduccion(construccionSelect.value);
+      const produccionActual = parseInt(document.getElementById('produccion').textContent);
+      const turnos = Math.ceil(costoProduccion / produccionActual);
+      document.getElementById('turnosConstruccion').textContent = ` (${turnos} turnos)`;
+    }
+
+    // Función para obtener el costo de producción de una construcción
+    function obtenerCostoProduccion(construccion) {
+      const costos = {
+        granjas: 50,
+        minas: 100,
+        fabricasAleaciones: 200,
+        refinerias: 150,
+        reactores: 250,
+        minasEsclavos: 300,
+        centrosTrabajosForzados: 400,
+      };
+      return costos[construccion] || 0;
+    }
+
+    // Función para construir la construcción seleccionada
+    function construirSeleccionada() {
+      const construccionSelect = document.getElementById('construccionSelect');
+      const construccion = construccionSelect.value;
+      const costoProduccion = obtenerCostoProduccion(construccion);
+      const produccionActual = parseInt(document.getElementById('produccion').textContent);
+      const turnos = Math.ceil(costoProduccion / produccionActual);
+
+      // Actualizar recursos descontando el costo de construcción
+      restarRecurso('energia', costoProduccion);
+      restarRecurso('materiaPrima', costoProduccion);
+
+      // Agregar la construcción a la lista de construcciones en proceso
+      const listaConstrucciones = document.getElementById('listaConstrucciones');
+      const nuevaConstruccion = document.createElement('li');
+      nuevaConstruccion.textContent = `${construccion} (Turnos restantes: ${turnos})`;
+      listaConstrucciones.appendChild(nuevaConstruccion);
+
+      // Limpiar selección y campo de turnos de construcción
+      construccionSelect.value = '';
+      document.getElementById('turnosConstruccion').textContent = '';
+    }
+
+    // Función para avanzar al siguiente turno
+    function siguienteTurno() {
+      const turnoSpan = document.getElementById('turno');
+      let turnoActual = parseInt(turnoSpan.textContent);
+      turnoSpan.textContent = turnoActual + 1;
+
+      // Actualizar recursos según las construcciones en proceso
+      const construccionesEnProceso = document.querySelectorAll('#listaConstrucciones li');
+      construccionesEnProceso.forEach((construccion) => {
+        const construccionNombre = construccion.textContent.split(' ')[0];
+        switch (construccionNombre) {
+          case 'Granjas':
+            sumarRecurso('comida', 4);
+            restarRecurso('energia', 1);
+            break;
+          case 'Minas':
+            sumarRecurso('materiaPrima', 3);
+            restarRecurso('energia', 1);
+            break;
+          case 'Fábricas':
+            sumarRecurso('aleaciones', 2);
+            restarRecurso('materiaPrima', 2);
+            restarRecurso('energia', 1);
+            break;
+          case 'Refinerías':
+            sumarRecurso('energia', 7);
+            restarRecurso('comida', 2);
+            break;
+          case 'Reactores':
+            sumarRecurso('combustible', 4);
+            restarRecurso('materiaPrima', 1);
+            break;
+          case 'Minas':
+            sumarRecurso('minerales', 6);
+            restarRecurso('comida', 2);
+            break;
+          case 'Centros':
+            sumarRecurso('comida', 6);
+            restarRecurso('energia', 2);
+            break;
+          case 'Bunker':
+            restarRecurso('energia', 1);
+            break;
+          case 'Trinchera':
+            restarRecurso('energia', 1);
+            break;
+          default:
+            break;
+        }
+        // Reducir en 1 el número de turnos restantes para la construcción
+        const turnosRestantes = parseInt(construccion.textContent.split(' ')[3]);
+        const turnosActualizados = turnosRestantes - 1;
+        construccion.textContent = `${construccionNombre} (Turnos restantes: ${turnosActualizados})`;
+      });
+    }
+  </script>
+</body>
+</html>
